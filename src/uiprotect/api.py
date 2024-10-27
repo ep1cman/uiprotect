@@ -1502,6 +1502,11 @@ class ProtectApiClient(BaseApiClient):
         video clips, otherwise the full video must be downloaded to memory before
         being written.
         """
+        if self.bootstrap.nvr.version < Version("4.0.0"):
+            raise ValueError(
+                "This method is only support from Unifi Protect version >= 4.0.0."
+            )
+
         path = "video/download"
 
         params = {
@@ -1581,6 +1586,10 @@ class ProtectApiClient(BaseApiClient):
 
         You will receive a filename and an expiry time in seconds.
         """
+        if self.bootstrap.nvr.version < Version("4.0.0"):
+            raise ValueError(
+                "This method is only support from Unifi Protect version >= 4.0.0."
+            )
 
         if validate_channel_id:
             self._validate_channel_id(camera_id, channel_index)
@@ -1721,7 +1730,7 @@ class ProtectApiClient(BaseApiClient):
         If you are using Unifi Protect 4 or later, please use
         prepare_camera_video() and download_camera_video() instead.
         """
-        try:
+        if self.bootstrap.nvr.version >= Version("4.0.0"):
             prepare_response = await self.prepare_camera_video(
                 camera_id=camera_id,
                 start=start,
@@ -1745,7 +1754,7 @@ class ProtectApiClient(BaseApiClient):
                 progress_callback=progress_callback,
                 chunk_size=chunk_size,
             )
-        except Exception:
+        else:
             return await self.export_camera_video(
                 camera_id=camera_id,
                 start=start,
