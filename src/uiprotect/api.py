@@ -1741,10 +1741,11 @@ class ProtectApiClient(BaseApiClient):
                 filename=filename,
             )
 
-            if isinstance(prepare_response, dict):
-                download_filename = prepare_response["fileName"]
-            else:
-                raise Exception
+            if not isinstance(prepare_response, dict):
+                raise ValueError(
+                    f"Expected `prepare_response` to be a dict, but it is {prepare_response}"
+                )
+            download_filename = prepare_response["fileName"]
 
             return await self.download_camera_video(
                 camera_id=camera_id,
