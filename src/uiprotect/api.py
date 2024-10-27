@@ -1547,6 +1547,16 @@ class ProtectApiClient(BaseApiClient):
         r.close()
         return None
 
+    def _validate_channel_id(self, camera_id: str, channel_index: int):
+        """Validate if camera_id and channel_index are valid."""
+        if self._bootstrap is None:
+            self.update()
+        try:
+            camera = self._bootstrap.cameras[camera_id]
+            camera.channels[channel_index]
+        except (IndexError, AttributeError, KeyError) as e:
+            raise BadRequest(f"Invalid input: {e}") from e
+
     async def prepare_camera_video(
         self,
         camera_id: str,
@@ -1571,12 +1581,9 @@ class ProtectApiClient(BaseApiClient):
 
         You will receive a filename and an expiry time in seconds.
         """
-        if validate_channel_id and self._bootstrap is not None:
-            try:
-                camera = self._bootstrap.cameras[camera_id]
-                camera.channels[channel_index]
-            except IndexError as e:
-                raise BadRequest from e
+
+        if validate_channel_id:
+            self._validate_channel_id(camera_id, channel_index)
 
         params = {
             "camera": camera_id,
@@ -1636,12 +1643,8 @@ class ProtectApiClient(BaseApiClient):
         value. Protect app gives the options for 60x (fps=4), 120x (fps=8), 300x
         (fps=20), and 600x (fps=40).
         """
-        if validate_channel_id and self._bootstrap is not None:
-            try:
-                camera = self._bootstrap.cameras[camera_id]
-                camera.channels[channel_index]
-            except IndexError as e:
-                raise BadRequest from e
+        if validate_channel_id:
+            self._validate_channel_id(camera_id, channel_index)
 
         params = {
             "camera": camera_id,
