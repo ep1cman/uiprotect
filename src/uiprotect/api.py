@@ -48,6 +48,7 @@ from .data import (
     SmartDetectObjectType,
     SmartDetectTrack,
     Version,
+    VideoExportType,
     Viewer,
     WSPacket,
     WSSubscriptionMessage,
@@ -1590,9 +1591,9 @@ class ProtectApiClient(BaseApiClient):
 
         if fps is not None and fps > 0:
             params["fps"] = fps
-            params["type"] = "timelapse"
+            params["type"] = VideoExportType.TIMELAPSE
         else:
-            params["type"] = "rotating"
+            params["type"] = VideoExportType.ROTATING
 
         if not filename:
             start_str = start.strftime("%m-%d-%Y, %H.%M.%S %Z")
@@ -1655,7 +1656,7 @@ class ProtectApiClient(BaseApiClient):
 
         if fps is not None and fps > 0:
             params["fps"] = fps
-            params["type"] = "timelapse"
+            params["type"] = VideoExportType.TIMELAPSE
 
         path = "video/export"
 
