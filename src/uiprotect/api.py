@@ -1525,7 +1525,7 @@ class ProtectApiClient(BaseApiClient):
                 raise_exception=False,
             )
 
-        r = await self._os.request(
+        r = await self.request(
             "get",
             f"{self.api_path}{path}",
             auto_close=False,
@@ -1661,17 +1661,16 @@ class ProtectApiClient(BaseApiClient):
             "end": to_js_time(end),
         }
 
+        if fps is not None and fps > 0:
+            params["fps"] = fps
+            params["type"] = VideoExportType.TIMELAPSE
+
         if channel_index == 3:
             params.update({"lens": 2})
         else:
             params.update({"channel": channel_index})
 
-        if fps is not None and fps > 0:
-            params["fps"] = fps
-            params["type"] = VideoExportType.TIMELAPSE
-
         path = "video/export"
-
         if (
             iterator_callback is None
             and progress_callback is None
@@ -1683,7 +1682,7 @@ class ProtectApiClient(BaseApiClient):
                 raise_exception=False,
             )
 
-        r = await self._os.request(
+        r = await self.request(
             "get",
             urljoin(self.api_path, path),
             auto_close=False,
